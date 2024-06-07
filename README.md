@@ -4,7 +4,7 @@ This project encompasses a vehicle rental system consisting of four main modules
 
 ## Dependencies
 
-This project is designed around POSTGRESQL, because of my personal distaste for the outdated MySQL Workbench so make sure you have the correct JDBC driver for this to work proprely.
+This project is designed around POSTGRESQL (because of my personal distaste for the outdated MySQL Workbench) so make sure you have the correct JDBC driver for this to work properly.
 Make sure you configure the DB connection properly inside the Database file @ src/core.
 
 ## Modules
