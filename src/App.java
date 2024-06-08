@@ -1,5 +1,7 @@
+import business.UserManager;
 import core.Database;
 import core.Helper;
+import view.AdminView;
 import view.LoginView;
 
 import javax.swing.*;
@@ -12,8 +14,9 @@ public class App {
         Helper.setTheme();
 
         Connection con = Database.getInstance();
-        LoginView loginView = new LoginView();
-
+        UserManager userManager = new UserManager();
+        //LoginView loginView = new LoginView();
+        AdminView adminView = new AdminView(userManager.findbyLogin("admin","sudoroot"));
         //DAO
         //Entity
         //Business

@@ -32,6 +32,10 @@ public class Helper {
                 msg = "Operation successful.";
                 yield "Result";
             }
+            case "notFound" -> {
+                msg = "Requested data not found!";
+                yield "Message";
+            }
             default -> {
                 msg = str;
                 yield "Message";
