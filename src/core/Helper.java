@@ -23,21 +23,21 @@ public class Helper {
 
     public static void showMessage(String str) {
         String msg;
-        String title;
-
-        switch (str) {
-            case "fill":
+        String title = switch (str) {
+            case "fill" -> {
                 msg = "Please fill all fields.";
-                title = "Error!";
-                break;
-            case "done":
+                yield "Error!";
+            }
+            case "done" -> {
                 msg = "Operation successful.";
-                title = "Result";
-                break;
-            default:
+                yield "Result";
+            }
+            default -> {
                 msg = str;
-                title = "Message";
-        }
+                yield "Message";
+            }
+        };
+
         JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
     }
 

@@ -31,7 +31,7 @@ public class Database {
                 instance = new Database();
             }
         } catch (SQLException e) {
-            e.getMessage();
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
         return instance.getConnection();
