@@ -31,21 +31,22 @@ public class ModelDao {
     }
 
     public boolean save(Model model) {
-        String query = "INSERT INTO public.model (model_brand_id, model_name, model_year, model_type, model_fuel, model_gear) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.model (model_brand_id, model_name, model_type, model_year, model_fuel, model_gear) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = this.connection.prepareStatement(query);
             ps.setInt(1, model.getBrandId());
             ps.setString(2, model.getName());
-            ps.setString(3, model.getYear());
-            ps.setString(4, model.getType().name());
-            ps.setString(5, model.getFuel().name());
-            ps.setString(6, model.getGear().name());
+            ps.setString(3, model.getType().toString());
+            ps.setString(4, model.getYear());
+            ps.setString(5, model.getFuel().toString());
+            ps.setString(6, model.getGear().toString());
             return ps.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
     public boolean update(Model model) {
         String query = "UPDATE public.model SET model_brand_id = ?, model_name = ?, model_year = ?, model_type = ?, model_fuel = ?, model_gear = ? WHERE model_id = ?";

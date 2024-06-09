@@ -2,20 +2,20 @@ package view;
 
 import business.BrandManager;
 import business.ModelManager;
+import entity.Brand;
+import entity.Model;
 import entity.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * The AdminView class represents the admin interface of the Rent a Car Management System.
  * It displays a welcome message for the logged-in admin user and provides a tabbed interface
- * for managing different aspects of the system, such as brands.
+ * for managing different aspects of the system, such as brands and models.
  * The class extends the Layout class, which provides common GUI initialization functionality.
  */
 public class AdminView extends Layout {
@@ -30,6 +30,10 @@ public class AdminView extends Layout {
     private JPanel panel_model;
     private JScrollPane scroll_model;
     private JTable table_model;
+    private JComboBox<Brand> combo_filter_brand;
+    private JComboBox<Model.Type> combo_filter_type;
+    private JComboBox<Model.Fuel> combo_filter_fuel;
+    private JComboBox<Model.Gear> combo_filter_gear;
     private User user;
     private DefaultTableModel model_brand;
     private DefaultTableModel model_model;
@@ -37,6 +41,11 @@ public class AdminView extends Layout {
     private ModelManager modelManager;
     private JPopupMenu brandMenu;
     private JPopupMenu modelMenu;
+    private JPanel panel_filter;
+    private JLabel brandLabel;
+    private JLabel fuelLabel;
+    private JLabel gearLabel;
+    private JLabel typeLabel;
 
     /**
      * Constructs an AdminView instance with the specified user.
@@ -46,7 +55,7 @@ public class AdminView extends Layout {
      */
     public AdminView(User user) {
         this.add(container);
-        this.guiInitialize(500, 500);
+        this.guiInitialize(1000, 500);
         this.user = user;
 
         if (this.user == null) {
@@ -72,6 +81,7 @@ public class AdminView extends Layout {
 
         loadBrandData();
         loadModelData();
+        loadFilterComponents();
         loadBrandComponent();
         loadModelComponent();
 
@@ -81,12 +91,114 @@ public class AdminView extends Layout {
         });
     }
 
-    public void loadModelData() {
+    public void loadModelTable() {
         Object[] col_model = {"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"};
         // Fetch model data
-        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, this.modelManager.findAll());
+        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, modelManager.findAll());
 
         // Create and populate the table
+        this.createTable(this.model_model, this.table_model, col_model, modelList);
+    }
+
+    /**
+     * Initializes the filter components for models.
+     */
+    private void loadFilterComponents() {
+        // Add "None" option and populate combo boxes with enum values
+        combo_filter_brand.addItem(null); // Add "None" option
+        for (Brand brand : brandManager.findAll()) {
+            combo_filter_brand.addItem(brand);
+        }
+
+        combo_filter_type.addItem(null); // Add "None" option
+        for (Model.Type type : Model.Type.values()) {
+            combo_filter_type.addItem(type);
+        }
+
+        combo_filter_fuel.addItem(null); // Add "None" option
+        for (Model.Fuel fuel : Model.Fuel.values()) {
+            combo_filter_fuel.addItem(fuel);
+        }
+
+        combo_filter_gear.addItem(null); // Add "None" option
+        for (Model.Gear gear : Model.Gear.values()) {
+            combo_filter_gear.addItem(gear);
+        }
+
+        combo_filter_brand.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    setText("None");
+                } else {
+                    setText(((Brand) value).getName());
+                }
+                return this;
+            }
+        });
+
+        combo_filter_type.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    setText("None");
+                } else {
+                    setText(value.toString());
+                }
+                return this;
+            }
+        });
+
+        combo_filter_fuel.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    setText("None");
+                } else {
+                    setText(value.toString());
+                }
+                return this;
+            }
+        });
+
+        combo_filter_gear.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    setText("None");
+                } else {
+                    setText(value.toString());
+                }
+                return this;
+            }
+        });
+
+        ActionListener filterActionListener = e -> filterModelData();
+        combo_filter_brand.addActionListener(filterActionListener);
+        combo_filter_type.addActionListener(filterActionListener);
+        combo_filter_fuel.addActionListener(filterActionListener);
+        combo_filter_gear.addActionListener(filterActionListener);
+    }
+
+    /**
+     * Filters the model data based on selected filters.
+     */
+    private void filterModelData() {
+        Brand selectedBrand = (Brand) combo_filter_brand.getSelectedItem();
+        Model.Type selectedType = (Model.Type) combo_filter_type.getSelectedItem();
+        Model.Fuel selectedFuel = (Model.Fuel) combo_filter_fuel.getSelectedItem();
+        Model.Gear selectedGear = (Model.Gear) combo_filter_gear.getSelectedItem();
+
+        ArrayList<Model> models = modelManager.findAll();
+        ArrayList<Model> filteredModels = (ArrayList<Model>) models.stream()
+                .filter(model -> (selectedBrand == null || model.getBrandId() == selectedBrand.getId()))
+                .filter(model -> (selectedType == null || model.getType() == selectedType))
+                .filter(model -> (selectedFuel == null || model.getFuel() == selectedFuel))
+                .filter(model -> (selectedGear == null || model.getGear() == selectedGear))
+                .collect(Collectors.toList());
+
+        Object[] col_model = {"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"};
+        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, filteredModels);
         this.createTable(this.model_model, this.table_model, col_model, modelList);
     }
 
@@ -217,5 +329,13 @@ public class AdminView extends Layout {
 
         // Create and populate the table
         this.createTable(this.model_brand, this.table_brand, col_brand, brandList);
+    }
+
+    /**
+     * Loads the model data into the table model.
+     * This method fetches the model data from the ModelManager and populates the table model.
+     */
+    private void loadModelData() {
+        filterModelData();
     }
 }

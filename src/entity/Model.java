@@ -32,13 +32,16 @@ public class Model {
     }
 
     // Constructor for creating a new model
-    public Model(int brandId, String name, String year, Type type, Fuel fuel, Gear gear) {
-        this.brandId = brandId;
+    public Model(String name, String year, Type type, Fuel fuel, Gear gear, Brand brand) {
         this.name = name;
         this.year = year;
         this.type = type;
         this.fuel = fuel;
         this.gear = gear;
+        this.brand = brand;
+        if (brand != null) {
+            this.brandId = brand.getId();
+        }
     }
 
     // Constructor for updating an existing model

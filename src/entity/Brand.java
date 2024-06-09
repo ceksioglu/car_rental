@@ -4,8 +4,7 @@ public class Brand {
     private int id;
     private String name;
 
-    public Brand(){
-
+    public Brand() {
     }
 
     public Brand(int id, String name) {
@@ -13,7 +12,7 @@ public class Brand {
         this.name = name;
     }
 
-    public Brand(String name){
+    public Brand(String name) {
         this.name = name;
     }
 
@@ -31,5 +30,10 @@ public class Brand {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

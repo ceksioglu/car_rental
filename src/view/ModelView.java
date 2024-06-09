@@ -8,6 +8,8 @@ import entity.Model;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * The ModelView class represents the interface for adding and editing car models.
@@ -58,8 +60,9 @@ public class ModelView extends Layout {
             combo_model_gear.addItem(gear);
         }
 
-        // Populate the brand combo box with available brands
+        // Populate the brand combo box with available brands, sorted alphabetically
         ArrayList<Brand> brands = brandManager.findAll();
+        Collections.sort(brands, Comparator.comparing(Brand::getName));
         for (Brand brand : brands) {
             combo_model_brand.addItem(brand);
         }
@@ -78,22 +81,22 @@ public class ModelView extends Layout {
             if (Helper.isFieldEmpty(this.field_model_name) || Helper.isFieldEmpty(this.field_model_year)) {
                 Helper.showMessage("fill");
             } else {
+                Brand brand = (Brand) combo_model_brand.getSelectedItem();
                 Model.Type type = (Model.Type) combo_model_type.getSelectedItem();
                 Model.Fuel fuel = (Model.Fuel) combo_model_fuel.getSelectedItem();
                 Model.Gear gear = (Model.Gear) combo_model_gear.getSelectedItem();
-                Brand brand = (Brand) combo_model_brand.getSelectedItem();
 
-                boolean result;
+                boolean result = true;
                 if (this.model == null) {
-                    result = modelManager.save(new Model(brand.getId(), field_model_name.getText(), field_model_year.getText(), type, fuel, gear));
+                    result = modelManager.save(new Model(field_model_name.getText(), field_model_year.getText(), type, fuel, gear, brand));
                 } else {
-                    this.model.setBrandId(brand.getId());
-                    this.model.setName(field_model_name.getText());
-                    this.model.setYear(field_model_year.getText());
-                    this.model.setType(type);
-                    this.model.setFuel(fuel);
-                    this.model.setGear(gear);
-                    result = modelManager.update(this.model);
+                    model.setName(field_model_name.getText());
+                    model.setYear(field_model_year.getText());
+                    model.setType(type);
+                    model.setFuel(fuel);
+                    model.setGear(gear);
+                    model.setBrand(brand);
+                    result = modelManager.update(model);
                 }
 
                 if (result) {

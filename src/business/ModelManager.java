@@ -17,6 +17,24 @@ public class ModelManager {
         return this.modelDao.findAll();
     }
 
+    public ArrayList<Object[]> getForTable(int size, ArrayList<Model> modelList) {
+        ArrayList<Object[]> modelRowList = new ArrayList<>();
+        for (Model model : modelList) {
+            Object[] rowObject = new Object[size];
+            int i = 0;
+            rowObject[i++] = model.getId();
+            rowObject[i++] = model.getBrandId();
+            rowObject[i++] = model.getName();
+            rowObject[i++] = model.getYear();
+            rowObject[i++] = model.getType();
+            rowObject[i++] = model.getFuel();
+            rowObject[i++] = model.getGear();
+            rowObject[i++] = model.getBrand().getName();
+            modelRowList.add(rowObject);
+        }
+        return modelRowList;
+    }
+
     public boolean save(Model model) {
         if (model.getId() != 0) {
             Helper.showMessage("error");
@@ -37,27 +55,9 @@ public class ModelManager {
 
     public boolean delete(int id) {
         if (this.getById(id) == null) {
-            Helper.showMessage(id + " No Model with this ID.");
+            Helper.showMessage(id + " No item with this ID.");
             return false;
         }
         return this.modelDao.delete(id);
-    }
-
-    public ArrayList<Object[]> getForTable(int size, ArrayList<Model> modelList) {
-        ArrayList<Object[]> modelRowList = new ArrayList<>();
-        for (Model model : modelList) {
-            Object[] rowObject = new Object[size];
-            int i = 0;
-            rowObject[i++] = model.getId();
-            rowObject[i++] = model.getBrandId();
-            rowObject[i++] = model.getName();
-            rowObject[i++] = model.getYear();
-            rowObject[i++] = model.getType().name();
-            rowObject[i++] = model.getFuel().name();
-            rowObject[i++] = model.getGear().name();
-            rowObject[i++] = model.getBrand() != null ? model.getBrand().getName() : "Unknown";
-            modelRowList.add(rowObject);
-        }
-        return modelRowList;
     }
 }
