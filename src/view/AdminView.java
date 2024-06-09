@@ -1,6 +1,7 @@
 package view;
 
 import business.BrandManager;
+import business.ModelManager;
 import entity.User;
 
 import javax.swing.*;
@@ -26,9 +27,14 @@ public class AdminView extends Layout {
     private JPanel panel_brand;
     private JScrollPane scroll_brand;
     private JTable table_brand;
+    private JPanel panel_model;
+    private JScrollPane scroll_model;
+    private JTable table_model;
     private User user;
     private DefaultTableModel model_brand;
+    private DefaultTableModel model_model;
     private BrandManager brandManager;
+    private ModelManager modelManager;
     private JPopupMenu brandMenu;
 
     /**
@@ -64,6 +70,15 @@ public class AdminView extends Layout {
             // Handle logout logic here
             dispose();
         });
+    }
+
+    public void loadModelTable(){
+        Object[] col_model = {"Model ID", "Brand ID","Name","Year","Type","Fuel","Gear","Brand"};
+        // Fetch brand data
+        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length,this.modelManager.findAll());
+
+        // Create and populate the table
+        this.createTable(this.model_model, this.table_model, col_model, modelList);
     }
 
     /**
