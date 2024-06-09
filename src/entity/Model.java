@@ -2,7 +2,7 @@ package entity;
 
 public class Model {
     private int id;
-    private int brand_id;
+    private int brandId;
     private String name;
     private String year;
     private Type type;
@@ -27,18 +27,29 @@ public class Model {
         HATCHBACK
     }
 
-    // Constructors
-    public Model() {}
+    // Default constructor
+    public Model() {
+    }
 
-    public Model(int id, int brand_id, String name, String year, Type type, Fuel fuel, Gear gear, Brand brand) {
-        this.id = id;
-        this.brand_id = brand_id;
+    // Constructor for creating a new model
+    public Model(int brandId, String name, String year, Type type, Fuel fuel, Gear gear) {
+        this.brandId = brandId;
         this.name = name;
         this.year = year;
         this.type = type;
         this.fuel = fuel;
         this.gear = gear;
-        this.brand = brand;
+    }
+
+    // Constructor for updating an existing model
+    public Model(int id, int brandId, String name, String year, Type type, Fuel fuel, Gear gear) {
+        this.id = id;
+        this.brandId = brandId;
+        this.name = name;
+        this.year = year;
+        this.type = type;
+        this.fuel = fuel;
+        this.gear = gear;
     }
 
     // Getters and Setters
@@ -50,12 +61,12 @@ public class Model {
         this.id = id;
     }
 
-    public int getBrand_id() {
-        return brand_id;
+    public int getBrandId() {
+        return brandId;
     }
 
-    public void setBrand_id(int brand_id) {
-        this.brand_id = brand_id;
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
     }
 
     public String getName() {
@@ -104,20 +115,5 @@ public class Model {
 
     public void setBrand(Brand brand) {
         this.brand = brand;
-    }
-
-    // toString method for debugging
-    @Override
-    public String toString() {
-        return "Model{" +
-                "id=" + id +
-                ", brand_id=" + brand_id +
-                ", name='" + name + '\'' +
-                ", year='" + year + '\'' +
-                ", type=" + type +
-                ", fuel=" + fuel +
-                ", gear=" + gear +
-                ", brand=" + brand +
-                '}';
     }
 }

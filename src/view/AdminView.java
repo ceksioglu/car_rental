@@ -36,6 +36,7 @@ public class AdminView extends Layout {
     private BrandManager brandManager;
     private ModelManager modelManager;
     private JPopupMenu brandMenu;
+    private JPopupMenu modelMenu;
 
     /**
      * Constructs an AdminView instance with the specified user.
@@ -54,17 +55,25 @@ public class AdminView extends Layout {
         this.label_welcome.setText("Welcome: " + this.user.getUsername());
 
         this.brandManager = new BrandManager();
+        this.modelManager = new ModelManager();
 
         // Initialize the table model with column headers
         this.model_brand = new DefaultTableModel();
         this.model_brand.setColumnIdentifiers(new Object[]{"Brand ID", "Brand Name"});
         this.table_brand.setModel(model_brand);
 
+        this.model_model = new DefaultTableModel();
+        this.model_model.setColumnIdentifiers(new Object[]{"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"});
+        this.table_model.setModel(model_model);
+
         // Disable table header reordering
         this.table_brand.getTableHeader().setReorderingAllowed(false);
+        this.table_model.getTableHeader().setReorderingAllowed(false);
 
         loadBrandData();
+        loadModelData();
         loadBrandComponent();
+        loadModelComponent();
 
         button_logout.addActionListener(e -> {
             // Handle logout logic here
@@ -72,10 +81,10 @@ public class AdminView extends Layout {
         });
     }
 
-    public void loadModelTable(){
-        Object[] col_model = {"Model ID", "Brand ID","Name","Year","Type","Fuel","Gear","Brand"};
-        // Fetch brand data
-        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length,this.modelManager.findAll());
+    public void loadModelData() {
+        Object[] col_model = {"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"};
+        // Fetch model data
+        ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, this.modelManager.findAll());
 
         // Create and populate the table
         this.createTable(this.model_model, this.table_model, col_model, modelList);
@@ -137,6 +146,64 @@ public class AdminView extends Layout {
         });
 
         this.table_brand.setComponentPopupMenu(brandMenu);
+    }
+
+    /**
+     * Initializes the model components including the table and its context menu.
+     */
+    private void loadModelComponent() {
+        this.modelMenu = new JPopupMenu();
+
+        this.table_model.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedRow = table_model.rowAtPoint(e.getPoint());
+                table_model.setRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
+
+        this.modelMenu.add("Create").addActionListener(e -> {
+            ModelView modelView = new ModelView(null);
+            modelView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadModelData();
+                }
+            });
+        });
+
+        this.modelMenu.add("Update").addActionListener(e -> {
+            int selectedRow = table_model.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectModelId = getTableSelectedRow(table_model, 0);
+                ModelView modelView = new ModelView(this.modelManager.getById(selectModelId));
+                modelView.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        loadModelData();
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a model to update.", "Update Model", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.modelMenu.add("Delete").addActionListener(e -> {
+            int selectedRow = table_model.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectModelId = getTableSelectedRow(table_model, 0);
+                int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this model?", "Delete Model", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    if (this.modelManager.delete(selectModelId)) {
+                        loadModelData();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a model to delete.", "Delete Model", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.table_model.setComponentPopupMenu(modelMenu);
     }
 
     /**
