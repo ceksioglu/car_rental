@@ -119,4 +119,32 @@ public class Model {
     public void setBrand(Brand brand) {
         this.brand = brand;
     }
+
+    // Inner class for ComboItem
+    public class ComboItem {
+        private int key;
+        private String value;
+
+        public ComboItem(int key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public int getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public ComboItem getComboItem() {
+        return new ComboItem(this.getId(), this.getBrand().getName() + " - " + this.getName() + " - " + this.getYear() + " - " + this.getGear());
+    }
 }

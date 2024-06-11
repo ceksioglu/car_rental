@@ -52,7 +52,7 @@
           <text value="Color"/>
         </properties>
       </component>
-      <component id="ff1a" class="javax.swing.JTextField" binding="field_color">
+      <component id="8bdb8" class="javax.swing.JComboBox" binding="combo_color">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>

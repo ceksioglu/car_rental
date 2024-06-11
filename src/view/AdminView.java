@@ -1,6 +1,7 @@
 package view;
 
 import business.BrandManager;
+import business.CarManager;
 import business.ModelManager;
 import entity.Brand;
 import entity.Model;
@@ -37,8 +38,10 @@ public class AdminView extends Layout {
     private User user;
     private DefaultTableModel model_brand;
     private DefaultTableModel model_model;
+    private DefaultTableModel model_car;
     private BrandManager brandManager;
     private ModelManager modelManager;
+    private CarManager carManager;
     private JPopupMenu brandMenu;
     private JPopupMenu modelMenu;
     private JPanel panel_filter;
@@ -68,6 +71,7 @@ public class AdminView extends Layout {
 
         this.brandManager = new BrandManager();
         this.modelManager = new ModelManager();
+        this.carManager = new CarManager();
 
         // Initialize the table model with column headers
         this.model_brand = new DefaultTableModel();
@@ -78,15 +82,26 @@ public class AdminView extends Layout {
         this.model_model.setColumnIdentifiers(new Object[]{"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"});
         this.table_model.setModel(model_model);
 
+        this.model_car = new DefaultTableModel();
+        this.model_car.setColumnIdentifiers(new Object[]{"ID","Brand","Plate","Color","KM","Year","Type","Fuel Type","Gear"});
+        this.table_car.setModel(model_car);
+
+
+
         // Disable table header reordering
         this.table_brand.getTableHeader().setReorderingAllowed(false);
         this.table_model.getTableHeader().setReorderingAllowed(false);
+        this.table_car.getTableHeader().setReorderingAllowed(false);
 
         loadBrandData();
         loadModelData(); // Load all models initially
+        loadCarData();
+
         loadFilterComponents();
         loadBrandComponent();
         loadModelComponent();
+
+
 
         button_logout.addActionListener(e -> {
             // Handle logout logic here
@@ -330,5 +345,11 @@ public class AdminView extends Layout {
         Object[] col_brand = {"Brand ID", "Brand Name"};
         ArrayList<Object[]> brandList = brandManager.getForTable(col_brand.length);
         this.createTable(this.model_brand, this.table_brand, col_brand, brandList);
+    }
+
+    private void loadCarData() {
+        Object[] col_car = {"ID","Brand","Model","Plate","Color","KM","Year","Type","Fuel Type"};
+        ArrayList<Object[]> carList = this.carManager.getForTable(10, this.carManager.findAll());
+        createTable(this.model_car,this.table_car,col_car,carList);
     }
 }
