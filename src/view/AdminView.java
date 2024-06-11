@@ -4,6 +4,7 @@ import business.BrandManager;
 import business.CarManager;
 import business.ModelManager;
 import entity.Brand;
+import entity.Car;
 import entity.Model;
 import entity.User;
 
@@ -44,6 +45,7 @@ public class AdminView extends Layout {
     private CarManager carManager;
     private JPopupMenu brandMenu;
     private JPopupMenu modelMenu;
+    private JPopupMenu carMenu;
     private JPanel panel_filter;
     private JLabel brandLabel;
     private JLabel fuelLabel;
@@ -100,6 +102,7 @@ public class AdminView extends Layout {
         loadFilterComponents();
         loadBrandComponent();
         loadModelComponent();
+        loadCarComponent();
 
 
 
@@ -352,4 +355,60 @@ public class AdminView extends Layout {
         ArrayList<Object[]> carList = this.carManager.getForTable(10, this.carManager.findAll());
         createTable(this.model_car,this.table_car,col_car,carList);
     }
+
+    private void loadCarComponent() {
+        this.carMenu = new JPopupMenu();
+
+        this.table_car.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedRow = table_car.rowAtPoint(e.getPoint());
+                table_car.setRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
+
+        this.carMenu.add("Create").addActionListener(e -> {
+            CarView carView = new CarView(null);  // Pass null for new car entry
+            carView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadCarData();
+                }
+            });
+        });
+
+        this.carMenu.add("Update").addActionListener(e -> {
+            int selectedRow = table_car.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectCarId = getTableSelectedRow(table_car, 0);
+                CarView carView = new CarView(this.carManager.getById(selectCarId));
+                carView.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        loadCarData();
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a car to update.", "Update Car", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.carMenu.add("Delete").addActionListener(e -> {
+            int selectedRow = table_car.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectCarId = getTableSelectedRow(table_car, 0);
+                int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this car?", "Delete Car", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    if (this.carManager.delete(selectCarId)) {
+                        loadCarData();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a car to delete.", "Delete Car", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.table_car.setComponentPopupMenu(carMenu);
+    }
+
 }

@@ -30,7 +30,7 @@ public class CarView extends Layout{
     private BrandManager brandManager;
 
     public CarView(Car car) {
-        this.car = car;
+        this.car = car != null ? car : new Car();
         this.carManager = new CarManager();
         this.modelManager = new ModelManager();
         this.brandManager = new BrandManager();
@@ -46,12 +46,14 @@ public class CarView extends Layout{
             this.combo_model.addItem(model.getComboItem());
         }
 
-        if (this.car.getCar_id() != 0){
+        if (this.car.getCar_id() != 0 && this.car != null){
             Model.ComboItem selectedItem = car.getCarmodel().getComboItem();
             this.combo_model.getModel().setSelectedItem(selectedItem);
             this.combo_color.getModel().setSelectedItem(car.getColor());
             this.field_plate.setText(car.getCar_plate());
             this.field_km.setText(Integer.toString(car.getCar_km()));
+        } else {
+            this.car = new Car();
         }
 
         this.button_car_save.addActionListener(e -> {
