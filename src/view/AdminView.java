@@ -1,8 +1,10 @@
 package view;
 
 import business.BrandManager;
+import business.CarManager;
 import business.ModelManager;
 import entity.Brand;
+import entity.Car;
 import entity.Model;
 import entity.User;
 
@@ -37,15 +39,21 @@ public class AdminView extends Layout {
     private User user;
     private DefaultTableModel model_brand;
     private DefaultTableModel model_model;
+    private DefaultTableModel model_car;
     private BrandManager brandManager;
     private ModelManager modelManager;
+    private CarManager carManager;
     private JPopupMenu brandMenu;
     private JPopupMenu modelMenu;
+    private JPopupMenu carMenu;
     private JPanel panel_filter;
     private JLabel brandLabel;
     private JLabel fuelLabel;
     private JLabel gearLabel;
     private JLabel typeLabel;
+    private JPanel panel_car;
+    private JScrollPane scroll_car;
+    private JTable table_car;
 
     /**
      * Constructs an AdminView instance with the specified user.
@@ -65,6 +73,7 @@ public class AdminView extends Layout {
 
         this.brandManager = new BrandManager();
         this.modelManager = new ModelManager();
+        this.carManager = new CarManager();
 
         // Initialize the table model with column headers
         this.model_brand = new DefaultTableModel();
@@ -75,15 +84,27 @@ public class AdminView extends Layout {
         this.model_model.setColumnIdentifiers(new Object[]{"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"});
         this.table_model.setModel(model_model);
 
+        this.model_car = new DefaultTableModel();
+        this.model_car.setColumnIdentifiers(new Object[]{"ID","Brand","Plate","Color","KM","Year","Type","Fuel Type","Gear"});
+        this.table_car.setModel(model_car);
+
+
+
         // Disable table header reordering
         this.table_brand.getTableHeader().setReorderingAllowed(false);
         this.table_model.getTableHeader().setReorderingAllowed(false);
+        this.table_car.getTableHeader().setReorderingAllowed(false);
 
         loadBrandData();
-        loadModelData();
+        loadModelData(); // Load all models initially
+        loadCarData();
+
         loadFilterComponents();
         loadBrandComponent();
         loadModelComponent();
+        loadCarComponent();
+
+
 
         button_logout.addActionListener(e -> {
             // Handle logout logic here
@@ -91,12 +112,13 @@ public class AdminView extends Layout {
         });
     }
 
-    public void loadModelTable() {
+    /**
+     * Loads all model data into the table model.
+     * This method fetches all model data from the ModelManager and populates the table model.
+     */
+    private void loadModelData() {
         Object[] col_model = {"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"};
-        // Fetch model data
         ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, modelManager.findAll());
-
-        // Create and populate the table
         this.createTable(this.model_model, this.table_model, col_model, modelList);
     }
 
@@ -324,18 +346,69 @@ public class AdminView extends Layout {
      */
     private void loadBrandData() {
         Object[] col_brand = {"Brand ID", "Brand Name"};
-        // Fetch brand data
         ArrayList<Object[]> brandList = brandManager.getForTable(col_brand.length);
-
-        // Create and populate the table
         this.createTable(this.model_brand, this.table_brand, col_brand, brandList);
     }
 
-    /**
-     * Loads the model data into the table model.
-     * This method fetches the model data from the ModelManager and populates the table model.
-     */
-    private void loadModelData() {
-        filterModelData();
+    private void loadCarData() {
+        Object[] col_car = {"ID","Brand","Model","Plate","Color","KM","Year","Type","Fuel Type"};
+        ArrayList<Object[]> carList = this.carManager.getForTable(10, this.carManager.findAll());
+        createTable(this.model_car,this.table_car,col_car,carList);
     }
+
+    private void loadCarComponent() {
+        this.carMenu = new JPopupMenu();
+
+        this.table_car.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedRow = table_car.rowAtPoint(e.getPoint());
+                table_car.setRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
+
+        this.carMenu.add("Create").addActionListener(e -> {
+            CarView carView = new CarView(null);  // Pass null for new car entry
+            carView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadCarData();
+                }
+            });
+        });
+
+        this.carMenu.add("Update").addActionListener(e -> {
+            int selectedRow = table_car.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectCarId = getTableSelectedRow(table_car, 0);
+                CarView carView = new CarView(this.carManager.getById(selectCarId));
+                carView.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        loadCarData();
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a car to update.", "Update Car", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.carMenu.add("Delete").addActionListener(e -> {
+            int selectedRow = table_car.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectCarId = getTableSelectedRow(table_car, 0);
+                int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this car?", "Delete Car", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    if (this.carManager.delete(selectCarId)) {
+                        loadCarData();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a car to delete.", "Delete Car", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        this.table_car.setComponentPopupMenu(carMenu);
+    }
+
 }
