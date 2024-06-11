@@ -46,6 +46,9 @@ public class AdminView extends Layout {
     private JLabel fuelLabel;
     private JLabel gearLabel;
     private JLabel typeLabel;
+    private JPanel panel_car;
+    private JScrollPane scroll_car;
+    private JTable table_car;
 
     /**
      * Constructs an AdminView instance with the specified user.
@@ -80,7 +83,7 @@ public class AdminView extends Layout {
         this.table_model.getTableHeader().setReorderingAllowed(false);
 
         loadBrandData();
-        loadModelData();
+        loadModelData(); // Load all models initially
         loadFilterComponents();
         loadBrandComponent();
         loadModelComponent();
@@ -91,12 +94,13 @@ public class AdminView extends Layout {
         });
     }
 
-    public void loadModelTable() {
+    /**
+     * Loads all model data into the table model.
+     * This method fetches all model data from the ModelManager and populates the table model.
+     */
+    private void loadModelData() {
         Object[] col_model = {"Model ID", "Brand ID", "Name", "Year", "Type", "Fuel", "Gear", "Brand"};
-        // Fetch model data
         ArrayList<Object[]> modelList = modelManager.getForTable(col_model.length, modelManager.findAll());
-
-        // Create and populate the table
         this.createTable(this.model_model, this.table_model, col_model, modelList);
     }
 
@@ -324,18 +328,7 @@ public class AdminView extends Layout {
      */
     private void loadBrandData() {
         Object[] col_brand = {"Brand ID", "Brand Name"};
-        // Fetch brand data
         ArrayList<Object[]> brandList = brandManager.getForTable(col_brand.length);
-
-        // Create and populate the table
         this.createTable(this.model_brand, this.table_brand, col_brand, brandList);
-    }
-
-    /**
-     * Loads the model data into the table model.
-     * This method fetches the model data from the ModelManager and populates the table model.
-     */
-    private void loadModelData() {
-        filterModelData();
     }
 }
