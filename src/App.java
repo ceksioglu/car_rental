@@ -15,8 +15,8 @@ public class App {
 
         Connection con = Database.getInstance();
         UserManager userManager = new UserManager();
-        //LoginView loginView = new LoginView();
-        AdminView adminView = new AdminView(userManager.findbyLogin("admin","sudoroot"));
+        LoginView loginView = new LoginView();
+        //AdminView adminView = new AdminView(userManager.findbyLogin("admin","sudoroot"));
         //DAO
         //Entity
         //Business

@@ -4,7 +4,6 @@ import business.BrandManager;
 import business.CarManager;
 import business.ModelManager;
 import entity.Brand;
-import entity.Car;
 import entity.Model;
 import entity.User;
 
@@ -54,6 +53,20 @@ public class AdminView extends Layout {
     private JPanel panel_car;
     private JScrollPane scroll_car;
     private JTable table_car;
+    private JPanel panel_book;
+    private JTable table1;
+    private JTextField field_startdate;
+    private JTextField field_enddate;
+    private JComboBox combo_gear;
+    private JButton button_find_vehicle;
+    private JComboBox combo_fuel;
+    private JComboBox combo_type;
+    private JPanel bookpanel_container;
+    private JLabel label_startdate;
+    private JLabel label_enddate;
+    private JLabel label_gear;
+    private JLabel label_fuel;
+    private JLabel label_type;
 
     /**
      * Constructs an AdminView instance with the specified user.
