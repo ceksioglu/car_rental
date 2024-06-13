@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!postgresql-42.7.3.jar
 *.war
 *.nar
 *.ear
